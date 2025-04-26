@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hitz Kartak - Binomio Fantastikoa</title>
+  <style>
+    body {
+      background: linear-gradient(to top right, #dfe9f3, #ffffff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(6, 80px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .card {
+      width: 80px;
+      height: 100px;
+      background: #aad4f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      cursor: pointer;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: 0.4s;
+      position: relative;
+    }
+    .card.open {
+      background: #ffeaa7;
+      font-size: 16px;
+      padding: 4px;
+      text-align: center;
+      animation: pop 0.4s ease;
+      box-shadow: 0 0 10px #f1c40f;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    #result {
+      font-size: 20px;
+      background: #fff3b0;
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-top: 10px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #74b9ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0984e3;
+    }
+    #instructions {
+      display: none;
+      text-align: left;
+      margin-top: 20px;
+      background: #ffeaa7;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<h1>🃏 Hitz Kartak: Binomio Fantastikoa</h1>
+<button onclick="toggleInstructions()">📖 Instrukzioak</button>
+<div id="instructions">
+  <h2>🃏 HITZ KARTAK: BINOMIO FANTASTIKOA - Instrukzioak</h2>
+  <ol>
+    <li>🎴 30 karta daude hasieran, guztiak 📚 ikusgai.</li>
+    <li>🖱️ Klik egin karta batean: hitz bat agertuko da.</li>
+    <li>🖱️ Klik egin bigarren karta batean: beste hitz bat agertuko da.</li>
+    <li>✨ Bi karta hautatu ondoren, binomio fantastikoa sortuko da!</li>
+    <li>📝 Istorio bat, esaldi bat edo ideia bat asmatu bi hitzekin.</li>
+    <li>🔄 "Berrabiarazi" botoiarekin, joko osoa berriz has dezakezu.</li>
+    <li>➕ "Beste binomio bat sortu" botoiarekin, binomio berria atera dezakezu.</li>
+  </ol>
+  <p>🌟 Ez dago erantzun zuzena edo okerra. Sortu, pentsatu eta gozatu!</p>
+</div>
+
+<div id="game-board"></div>
+<div id="result"></div>
+<div class="button-group">
+  <button onclick="resetGame()">🔄 Berrabiarazi</button>
+  <button onclick="newBinomio()">➕ Beste binomio bat sortu</button>
+</div>
+
+<script>
+const words = [
+  "etxea", "eskola", "liburua", "autoa", "herria",
+  "adiskidea", "lana", "familia", "hizkuntza", "udalerria",
+  "ikaslea", "irakaslea", "ospitalea", "parkea", "museoa",
+  "denda", "janaria", "erakusketa", "argazkia", "egunkaria",
+  "telebista", "ordutegia", "ibilbidea", "festak", "zinemaldia",
+  "bidaiaria", "hotela", "sukaldaritza", "artisautza", "kirola"
+];
+
+let selected = [];
+let cardsData = [];
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function createBoard() {
+  const board = document.getElementById('game-board');
+  board.innerHTML = '';
+  cardsData = shuffle([...words]);
+  selected = [];
+  document.getElementById('result').innerHTML = '';
+
+  cardsData.forEach((word, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = '📚';
+    card.addEventListener('click', () => flipCard(card, word));
+    board.appendChild(card);
+  });
+}
+
+function flipCard(card, word) {
+  if (selected.length >= 2 || card.classList.contains('open')) return;
+
+  card.classList.add('open');
+  card.innerHTML = word;
+  selected.push(word);
+
+  if (selected.length === 2) {
+    setTimeout(showResult, 300);
+  }
+}
+
+function showResult() {
+  const result = document.getElementById('result');
+  result.innerHTML = `✨ Zure binomio fantastikoa: <b>${selected[0]} + ${selected[1]}</b>`;
+}
+
+function newBinomio() {
+  selected = [];
+  document.getElementById('result').innerHTML = '';
+}
+
+function resetGame() {
+  createBoard();
+}
+
+function toggleInstructions() {
+  const instructions = document.getElementById('instructions');
+  if (instructions.style.display === 'none') {
+    instructions.style.display = 'block';
+  } else {
+    instructions.style.display = 'none';
+  }
+}
+
+// Iniciar el tablero al cargar
+createBoard();
+</script>
+
+</body>
+</html>
